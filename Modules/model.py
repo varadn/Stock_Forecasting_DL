@@ -44,7 +44,7 @@ class LSTM(nn.Module):
         # # have shape (batch_size, num_layers, hidden_dim).
         # lstm_out, self.hidden = self.lstm(linear_input)
 
-
+        
         lstm_out, self.hidden = self.sequential(input)
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
         y_pred = self.linear(lstm_out[:, -1, :])
