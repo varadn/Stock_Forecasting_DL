@@ -1,7 +1,7 @@
 import numpy as np
 
-class RNN():
-    def __init__(self, input_dim=1, hidden_dim=30, output_dim=1, lr=0.0001):
+class RNN:
+    def __init__(self, input_dim, hidden_dim, output_dim, lr):
         # Create layers
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
@@ -42,7 +42,7 @@ class RNN():
         return np.mean(np.square(actual - predicted))
     
 
-    def backpropagation(self, input, target, hidden_states, hidden_output):
+    def backprop(self, input, target, hidden_states, hidden_output):
         # Calculate Loss
         error = self.loss(target, hidden_output)
         # Init weights to shape of original weights
@@ -55,9 +55,47 @@ class RNN():
         gradient_hidden_states = grad_err * self.deriv_tanh(hidden_states[-1])
 
         # Iter backwards through each timestep
-        for i in reversed(range(input.shapep[0])):
+        for i in reversed(range(input.shape[0])):
             # Add grad's to weights
-            in_hid_hid += np.dot(gradient_hidden_states, hidden_states[i-1].T)
+            hid_hid_w += np.dot(gradient_hidden_states, hidden_states[i-1].T)
+            in_hid_w += np.dot(gradient_hidden_states, input[[i-1]])
+
+        # Add gradient to output weight
+        out_hid_w += np.dot((hidden_output- target), hidden_states[-1].T)
+        # Update weights
+        self.update_weights(in_hid_w, hid_hid_w, out_hid_w)
+
+    def train_model(self, input, target):
+        epochs = 10
+        # For each epoch
+        for epoch in range(epochs):
+            # list outputs
+            if epoch == epochs - 1:
+                train_output_list = []
+            for i in range(input.shape[0]):
+                hidden_states, hidden_output = self.forward(input[i])
+                # to measure training accuracy
+                if epoch == epochs - 1:
+                    # save outputs
+                    train_output_list.append(hidden_output.tolist()[0])
+                # backprop
+                self.backprop(input[i], target[i], hidden_states, hidden_output)
+        # Transpose outputs
+        train_output_list = np.array(train_output_list).T[0]
+        # return trained outputs
+        return train_output_list
+        
+    def test_model(self, input):
+        # list to save output
+        test_out_list = []
+        # forward step
+        for i in range(input.shape[0]):
+            hidden_states, hidden_output = self.forward(input[i])
+            # save outputs
+            test_out_list.append(hidden_output.tolist()[0])
+        # conver to array and transpose outputs
+        test_out_list = np.array(test_out_list).T[0]
+        return test_out_list
 
 
     
