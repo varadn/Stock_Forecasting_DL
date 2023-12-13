@@ -34,16 +34,6 @@ class LSTM(nn.Module):
                 torch.zeros(self.num_layers, self.batch_size, self.hidden_dim))
 
     def forward(self, input):
-        # #Forward pass through initial hidden layer
-        # conv_input = self.conv1d(input)
-        # linear_input = F.relu(conv_input)
-        # # linear_input = self.init_linear(input)
-        # # Forward pass through LSTM layer
-        # # shape of lstm_out: [batch_size, input_size ,hidden_dim]
-        # # shape of self.hidden: (a, b), where a and b both
-        # # have shape (batch_size, num_layers, hidden_dim).
-        # lstm_out, self.hidden = self.lstm(linear_input)
-
 
         lstm_out, self.hidden = self.sequential(input)
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction

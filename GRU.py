@@ -62,30 +62,31 @@ def train_all(files, input_model, num_epochs, loss_function, optimizer, device):
     save = 1
     if torch.cuda.is_available():
         model.cuda()
-        model.gradient_checkpointing_enable()
+        # model.gradient_checkpointing_enable()
     for file in files:
         model = train_on_file(file, model, num_epochs, loss_function, optimizer, device)
         # if save % 5 == 0:
         #     torch.save(model, 'checkpoints/forecast'+str(save)+'.pt')
         # save += 1
 
-    torch.save(model, 'forecast_rnn.pt')
+    torch.save(model, 'forecast_gru_10.pt')
 
 # %%
 
-from Modules.model import ElmanRNN
+from Modules.model import GRU
 
-model = ElmanRNN(30, 1, 64, 16, 1,)
+model = GRU(30, 1, 64, 16, 1)
 learning_rate = 0.001
 num_epochs = 10
 loss_function = nn.HuberLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
-files = sorted(glob.glob("archive/*.csv"))[:10]
-# files = glob.glob("../..archive/*.csv")
-# random.shuffle(files)
-
-files_list_path = "filenames.txt"
+# files = sorted(glob.glob("../../archive/*.csv"))[:10]
+files = glob.glob("archive/*.csv")
+random.shuffle(files)
+# files = files[:10]
+# print(files)
+files_list_path = "filenames-gru.txt"
 with open(files_list_path, 'w') as file:
     # Write each element of the string array to the file
     for item in files:
