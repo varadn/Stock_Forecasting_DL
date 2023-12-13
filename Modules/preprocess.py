@@ -21,7 +21,6 @@ def process_data(file):
     data = pd.read_csv(file)
     data = data[['Date', 'Close']]
     data['Date'] = pd.to_datetime(data['Date'])
-    # plt.plot(data['Date'], data['Close'])
     lookback = 30
     shifted_df = prepare_dataframe_for_lstm(data, lookback)
     shifted_df_as_np = shifted_df.to_numpy()
